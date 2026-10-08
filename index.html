@@ -51,9 +51,9 @@
     <thead><tr><th>Machine</th><th>Role</th><th>vCPU</th><th>RAM</th><th>Disk</th><th class="n">Pay-as-you-go /yr</th><th class="n">1-yr reserved /yr</th></tr></thead>
     <tbody>
       <tr><td>D4as_v7</td><td>AKS user node (apps, Loki, Grafana)</td><td>4</td><td>16 GB</td><td>128 GB Premium</td><td class="n">$1,848</td><td class="n">$1,092</td></tr>
-      <tr><td>D2als_v7 &times; 2</td><td>AKS system nodes</td><td>2 each</td><td>4 GB each</td><td>128 GB Premium each</td><td class="n">$1,636</td><td class="n">$966</td></tr>
+      <tr><td>D2als_v7</td><td>AKS system node (autoscale fixed at 1)</td><td>2</td><td>4 GB</td><td>128 GB Premium</td><td class="n">$818</td><td class="n">$483</td></tr>
       <tr><td>E2as_v7</td><td>Database VM</td><td>2</td><td>16 GB</td><td>30 GB OS + 128 GB data</td><td class="n">$1,218</td><td class="n">$716</td></tr>
-      <tr class="total"><td colspan="5">Subtotal, 4 machines</td><td class="n">$4,702</td><td class="n">$2,774</td></tr>
+      <tr class="total"><td colspan="5">Subtotal, 3 machines</td><td class="n">$3,884</td><td class="n">$2,291</td></tr>
     </tbody>
   </table>
 </section>
@@ -92,16 +92,18 @@
   <table style="margin-top:16px">
     <thead><tr><th>Line</th><th class="n">Per month</th><th class="n">Per year</th></tr></thead>
     <tbody>
-      <tr><td>Reservable machines, pay-as-you-go (6 machines)</td><td class="n" id="tPaygM"></td><td class="n" id="tPaygY"></td></tr>
+      <tr><td>Reservable machines, pay-as-you-go (5 machines)</td><td class="n" id="tPaygM"></td><td class="n" id="tPaygY"></td></tr>
       <tr><td>Reservable machines, with 1-year reservation</td><td class="n" id="tRiM"></td><td class="n" id="tRiY"></td></tr>
-      <tr><td>Not reservable, mindpath: disks, load balancer, public IPs, snapshot</td><td class="n">$166</td><td class="n">$1,992</td></tr>
-      <tr><td>Chatbot machine disk (128 GB Premium)</td><td class="n">$24</td><td class="n">$286</td></tr>
-      <tr><td>Not reservable, aibotify tenant (section 4)</td><td class="n">$80</td><td class="n">$960</td></tr>
+      <tr><td>AKS control plane, Standard tier (not reservable)</td><td class="n">$73</td><td class="n">$876</td></tr>
+      <tr><td>Not reservable, mindpath: disks, load balancer, 3 public IPs, snapshot</td><td class="n">$118</td><td class="n">$1,416</td></tr>
+      <tr><td>Chatbot machine disk (128 GB Premium)</td><td class="n">$24</td><td class="n">$288</td></tr>
+      <tr><td>Odoo disk (32 GB) and static IP, chatbot machine IP</td><td class="n">$10</td><td class="n">$120</td></tr>
+      <tr><td>Not reservable, aibotify tenant (section 4)</td><td class="n">$109</td><td class="n">$1,308</td></tr>
       <tr class="total"><td>Total with reservations</td><td class="n" id="gRiM"></td><td class="n" id="gRiY"></td></tr>
       <tr class="total"><td>Total without reservations</td><td class="n" id="gPaygM"></td><td class="n" id="gPaygY"></td></tr>
     </tbody>
   </table>
-  <p class="foot">Odoo's disk and outbound bandwidth are not included. Prices are Azure list prices (prices.azure.com), not billed amounts.</p>
+  <p class="foot">Outbound bandwidth is not included. Prices are Azure list prices (prices.azure.com), not billed amounts.</p>
 </section>
 
 <section>
@@ -110,12 +112,12 @@
   <table>
     <thead><tr><th>Resource</th><th>Detail</th><th class="n">Per month</th></tr></thead>
     <tbody>
-      <tr><td>2 container registries <span class="tag stay">stays</span></td><td>Basic, $0.1666 a day each</td><td class="n">$10</td></tr>
-      <tr><td>2 Service Bus namespaces <span class="tag stay">stays</span></td><td>Standard, $10 base each plus messages</td><td class="n">$20</td></tr>
-      <tr><td>Front Door <span class="tag stay">stays</span></td><td>Standard, about $35 base + $5 policy, plus traffic</td><td class="n">~$40</td></tr>
+      <tr><td>2 container registries <span class="tag stay">stays</span></td><td>Basic, $0.1666 a day each, plus storage over the included 10 GB (183 GB and 171 GB stored)</td><td class="n">$44</td></tr>
+      <tr><td>2 Service Bus namespaces <span class="tag stay">stays</span></td><td>Standard, about $10 base once per subscription, the rest is operations</td><td class="n">$20</td></tr>
+      <tr><td>Front Door <span class="tag stay">stays</span></td><td>Standard, about $35 base, plus traffic (no WAF policy)</td><td class="n">~$35</td></tr>
       <tr><td>11 storage accounts <span class="tag stay">stays</span></td><td>~513 GB total, mostly stgebotifyuksprod (311 GB)</td><td class="n">~$10</td></tr>
       <tr><td>Key Vault <span class="tag stay">stays</span></td><td>kv-ebotify-prod-westus2</td><td class="n">~$0</td></tr>
-      <tr class="total"><td colspan="2">Subtotal</td><td class="n">~$80</td></tr>
+      <tr class="total"><td colspan="2">Subtotal</td><td class="n">~$109</td></tr>
     </tbody>
   </table>
 </section>
@@ -124,13 +126,13 @@
 
 <script>
   // Annual list prices (USD), UK South, from prices.azure.com
-  var base = { payg: 1848 + 1636 + 1218 + 372, ri: 1092 + 966 + 716 + 220 };
+  var base = { payg: 1848 + 818 + 1218 + 372, ri: 1092 + 483 + 716 + 220 };
   var sizes = {
     low:  { ram: "4 GB",  payg: 818,  ri: 483 },
     mid:  { ram: "8 GB",  payg: 929,  ri: 546 },
     high: { ram: "16 GB", payg: 1218, ri: 716 }
   };
-  var other = (166 + 24 + 80) * 12; // non-reservable, per year
+  var other = (73 + 118 + 24 + 10 + 109) * 12; // non-reservable, per year
   function usd(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
   function set(id, v) { document.getElementById(id).textContent = v; }
   function render() {
