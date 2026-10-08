@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eBotify Azure Reservation Plan</title>
+<style>
+  :root { --bg:#f5f7fa; --card:#fff; --ink:#1b2430; --mute:#5b6675; --line:#dde3ea; --accent:#0b5fff; --good:#0a7d3b; --warn:#a15c00; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:#10243f; color:#fff; padding:28px 32px; }
+  header h1 { margin:0 0 4px; font-size:24px; }
+  header p { margin:0; color:#b9c7da; }
+  main { max-width:1050px; margin:0 auto; padding:24px 20px 60px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px 22px; margin-bottom:20px; }
+  h2 { margin:0 0 4px; font-size:18px; }
+  .sub { margin:0 0 14px; color:var(--mute); font-size:13.5px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:#eef2f7; font-weight:600; font-size:13px; }
+  td.n, th.n { text-align:right; white-space:nowrap; }
+  tr.total td { font-weight:700; background:#f3f8ff; border-top:2px solid var(--accent); }
+  .tag { display:inline-block; font-size:12px; padding:2px 8px; border-radius:20px; background:#e6f4ea; color:var(--good); font-weight:600; }
+  .tag.opt { background:#fff3dc; color:var(--warn); }
+  .tag.stay { background:#eceff3; color:var(--mute); }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-top:14px; }
+  .kpi { border:1px solid var(--line); border-radius:8px; padding:14px 16px; background:#fbfcfe; }
+  .kpi .l { color:var(--mute); font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; }
+  .kpi .v { font-size:26px; font-weight:700; margin-top:2px; }
+  .kpi .v.g { color:var(--good); }
+  .kpi small { color:var(--mute); }
+  select { font:inherit; padding:7px 10px; border:1px solid var(--line); border-radius:6px; background:#fff; }
+  label { font-weight:600; margin-right:8px; }
+  .note { background:#fff8e6; border:1px solid #f0d58a; border-radius:8px; padding:12px 14px; font-size:13.5px; margin-top:14px; }
+  .foot { color:var(--mute); font-size:12.5px; margin-top:8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>eBotify Azure &mdash; Reservation Plan</h1>
+  <p>What we reserve now, the two machines still to size, and what stays as-is &middot; UK South &middot; list prices in USD</p>
+</header>
+
+<main>
+
+<section>
+  <h2>1. Reserve now (mindpath tenant, definite)</h2>
+  <p class="sub">These machines are fixed and run 24/7. A 1-year reservation saves about 41% against pay-as-you-go.</p>
+  <table>
+    <thead><tr><th>Machine</th><th>Role</th><th>vCPU</th><th>RAM</th><th>Disk</th><th class="n">Pay-as-you-go /yr</th><th class="n">1-yr reserved /yr</th></tr></thead>
+    <tbody>
+      <tr><td>D4as_v7</td><td>AKS user node (apps, Loki, Grafana)</td><td>4</td><td>16 GB</td><td>128 GB Premium</td><td class="n">$1,848</td><td class="n">$1,092</td></tr>
+      <tr><td>D2als_v7 &times; 2</td><td>AKS system nodes</td><td>2 each</td><td>4 GB each</td><td>128 GB Premium each</td><td class="n">$1,636</td><td class="n">$966</td></tr>
+      <tr><td>E2as_v7</td><td>Database VM</td><td>2</td><td>16 GB</td><td>30 GB OS + 128 GB data</td><td class="n">$1,218</td><td class="n">$716</td></tr>
+      <tr class="total"><td colspan="5">Subtotal, 4 machines</td><td class="n">$4,702</td><td class="n">$2,774</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>2. Two more machines to reserve once migrated to the Mindpath tenant</h2>
+  <p class="sub">One for Odoo (moves from the aibotify tenant) and one for the chatbots, sized anywhere from 4 GB to 16 GB RAM.</p>
+
+  <table>
+    <thead><tr><th>Machine</th><th>Role</th><th>vCPU</th><th>RAM</th><th>Disk</th><th class="n">Pay-as-you-go /yr</th><th class="n">1-yr reserved /yr</th></tr></thead>
+    <tbody>
+      <tr><td>B2als_v2 <span class="tag">fixed</span></td><td>Odoo VM (same size as today)</td><td>2</td><td>4 GB</td><td>as today</td><td class="n">$372</td><td class="n">$220</td></tr>
+      <tr><td>Chatbot machine <span class="tag opt">pick a size</span></td><td>Chatbot workloads</td><td>2</td><td id="cbRam">4 GB</td><td>128 GB Premium</td><td class="n" id="cbPayg">$818</td><td class="n" id="cbRi">$483</td></tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top:14px">
+    <label for="size">Chatbot machine size:</label>
+    <select id="size">
+      <option value="low">4 GB RAM &middot; 2 cores &middot; D2als_v7</option>
+      <option value="mid">8 GB RAM &middot; 2 cores &middot; D2as_v7</option>
+      <option value="high">16 GB RAM &middot; 2 cores &middot; E2as_v7</option>
+    </select>
+  </p>
+
+  <div class="note">
+    <strong>Check before choosing:</strong> the 26 chatbot pods use about 24 GB of RAM in total. One 2-core machine with at most 16 GB cannot hold them all.
+    The range shown here covers one machine only; running every chatbot needs about 32 GB, for example a D8as_v7.
+  </div>
+</section>
+
+<section>
+  <h2>3. Yearly and monthly bill</h2>
+  <p class="sub">Updates when you change the chatbot size above.</p>
+  <div class="cards">
+    <div class="kpi"><div class="l">Pay-as-you-go</div><div class="v" id="kPaygY">&ndash;</div><small id="kPaygM"></small></div>
+    <div class="kpi"><div class="l">With 1-year reservations</div><div class="v g" id="kRiY">&ndash;</div><small id="kRiM"></small></div>
+    <div class="kpi"><div class="l">You save</div><div class="v g" id="kSaveY">&ndash;</div><small id="kSaveM"></small></div>
+  </div>
+  <table style="margin-top:16px">
+    <thead><tr><th>Line</th><th class="n">Per month</th><th class="n">Per year</th></tr></thead>
+    <tbody>
+      <tr><td>Reservable machines, pay-as-you-go (6 machines)</td><td class="n" id="tPaygM"></td><td class="n" id="tPaygY"></td></tr>
+      <tr><td>Reservable machines, with 1-year reservation</td><td class="n" id="tRiM"></td><td class="n" id="tRiY"></td></tr>
+      <tr><td>Not reservable, mindpath: disks, load balancer, public IPs, snapshot</td><td class="n">$166</td><td class="n">$1,992</td></tr>
+      <tr><td>Chatbot machine disk (128 GB Premium)</td><td class="n">$24</td><td class="n">$286</td></tr>
+      <tr><td>Not reservable, aibotify tenant (section 4)</td><td class="n">$80</td><td class="n">$960</td></tr>
+      <tr class="total"><td>Total with reservations</td><td class="n" id="gRiM"></td><td class="n" id="gRiY"></td></tr>
+      <tr class="total"><td>Total without reservations</td><td class="n" id="gPaygM"></td><td class="n" id="gPaygY"></td></tr>
+    </tbody>
+  </table>
+  <p class="foot">Odoo's disk and outbound bandwidth are not included. Prices are Azure list prices (prices.azure.com), not billed amounts.</p>
+</section>
+
+<section>
+  <h2>4. Required Services, No Reservation Available</h2>
+  <p class="sub">We need these and they stay in the aibotify tenant, but Azure offers no reservation for them at our size, so they are billed pay-as-you-go.</p>
+  <table>
+    <thead><tr><th>Resource</th><th>Detail</th><th class="n">Per month</th></tr></thead>
+    <tbody>
+      <tr><td>2 container registries <span class="tag stay">stays</span></td><td>Basic, $0.1666 a day each</td><td class="n">$10</td></tr>
+      <tr><td>2 Service Bus namespaces <span class="tag stay">stays</span></td><td>Standard, $10 base each plus messages</td><td class="n">$20</td></tr>
+      <tr><td>Front Door <span class="tag stay">stays</span></td><td>Standard, about $35 base + $5 policy, plus traffic</td><td class="n">~$40</td></tr>
+      <tr><td>11 storage accounts <span class="tag stay">stays</span></td><td>~513 GB total, mostly stgebotifyuksprod (311 GB)</td><td class="n">~$10</td></tr>
+      <tr><td>Key Vault <span class="tag stay">stays</span></td><td>kv-ebotify-prod-westus2</td><td class="n">~$0</td></tr>
+      <tr class="total"><td colspan="2">Subtotal</td><td class="n">~$80</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<script>
+  // Annual list prices (USD), UK South, from prices.azure.com
+  var base = { payg: 1848 + 1636 + 1218 + 372, ri: 1092 + 966 + 716 + 220 };
+  var sizes = {
+    low:  { ram: "4 GB",  payg: 818,  ri: 483 },
+    mid:  { ram: "8 GB",  payg: 929,  ri: 546 },
+    high: { ram: "16 GB", payg: 1218, ri: 716 }
+  };
+  var other = (166 + 24 + 80) * 12; // non-reservable, per year
+  function usd(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
+  function set(id, v) { document.getElementById(id).textContent = v; }
+  function render() {
+    var s = sizes[document.getElementById("size").value];
+    var payg = base.payg + s.payg, ri = base.ri + s.ri;
+    set("cbRam", s.ram); set("cbPayg", usd(s.payg)); set("cbRi", usd(s.ri));
+    set("tPaygY", usd(payg)); set("tPaygM", usd(payg / 12));
+    set("tRiY", usd(ri));     set("tRiM", usd(ri / 12));
+    set("gPaygY", usd(payg + other)); set("gPaygM", usd((payg + other) / 12));
+    set("gRiY", usd(ri + other));     set("gRiM", usd((ri + other) / 12));
+    set("kPaygY", usd(payg + other) + " / yr"); set("kPaygM", usd((payg + other) / 12) + " / month");
+    set("kRiY", usd(ri + other) + " / yr");     set("kRiM", usd((ri + other) / 12) + " / month");
+    set("kSaveY", usd(payg - ri) + " / yr");    set("kSaveM", usd((payg - ri) / 12) + " / month");
+  }
+  document.getElementById("size").addEventListener("change", render);
+  render();
+</script>
+</body>
+</html>
