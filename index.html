@@ -40,10 +40,6 @@
   tr.payg td:first-child { border-left:4px solid var(--warn); }
   tr.total.ri td { background:#d3ecdb; border-top:2px solid var(--good); }
   tr.total.payg td { background:#ffe7b8; border-top:2px solid var(--warn); }
-  .key { font-size:13.5px; margin:16px 0 0; }
-  .key b { display:inline-block; width:12px; height:12px; border-radius:3px; margin:0 6px 0 0; vertical-align:-1px; }
-  .key b.g { background:var(--good); }
-  .key b.w { background:var(--warn); margin-left:14px; }
 </style>
 </head>
 <body>
@@ -99,8 +95,7 @@
     <div class="kpi"><div class="l">With 1-year reservations</div><div class="v g" id="kRiY">&ndash;</div><small id="kRiM"></small></div>
     <div class="kpi"><div class="l">You save</div><div class="v g" id="kSaveY">&ndash;</div><small id="kSaveM"></small></div>
   </div>
-  <p class="key"><b class="g"></b>Green total = green machine line + white lines<b class="w"></b>Amber total = amber machine line + white lines. The two machine lines are the same 5 machines priced two ways, so they are never added together.</p>
-  <table style="margin-top:10px">
+  <table style="margin-top:16px">
     <thead><tr><th>Line</th><th class="n">Per month</th><th class="n">Per year</th></tr></thead>
     <tbody>
       <tr class="payg"><td>Reservable machines, pay-as-you-go (5 machines) <span class="tag opt">not in the reserved total</span></td><td class="n" id="tPaygM"></td><td class="n" id="tPaygY"></td></tr>
