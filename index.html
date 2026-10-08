@@ -34,6 +34,16 @@
   label { font-weight:600; margin-right:8px; }
   .note { background:#fff8e6; border:1px solid #f0d58a; border-radius:8px; padding:12px 14px; font-size:13.5px; margin-top:14px; }
   .foot { color:var(--mute); font-size:12.5px; margin-top:8px; }
+  tr.ri td { background:#e6f4ea; }
+  tr.payg td { background:#fff3dc; }
+  tr.ri td:first-child { border-left:4px solid var(--good); }
+  tr.payg td:first-child { border-left:4px solid var(--warn); }
+  tr.total.ri td { background:#d3ecdb; border-top:2px solid var(--good); }
+  tr.total.payg td { background:#ffe7b8; border-top:2px solid var(--warn); }
+  .key { font-size:13.5px; margin:16px 0 0; }
+  .key b { display:inline-block; width:12px; height:12px; border-radius:3px; margin:0 6px 0 0; vertical-align:-1px; }
+  .key b.g { background:var(--good); }
+  .key b.w { background:var(--warn); margin-left:14px; }
 </style>
 </head>
 <body>
@@ -89,18 +99,19 @@
     <div class="kpi"><div class="l">With 1-year reservations</div><div class="v g" id="kRiY">&ndash;</div><small id="kRiM"></small></div>
     <div class="kpi"><div class="l">You save</div><div class="v g" id="kSaveY">&ndash;</div><small id="kSaveM"></small></div>
   </div>
-  <table style="margin-top:16px">
+  <p class="key"><b class="g"></b>Green total = green machine line + white lines<b class="w"></b>Amber total = amber machine line + white lines. The two machine lines are the same 5 machines priced two ways, so they are never added together.</p>
+  <table style="margin-top:10px">
     <thead><tr><th>Line</th><th class="n">Per month</th><th class="n">Per year</th></tr></thead>
     <tbody>
-      <tr><td>Reservable machines, pay-as-you-go (5 machines)</td><td class="n" id="tPaygM"></td><td class="n" id="tPaygY"></td></tr>
-      <tr><td>Reservable machines, with 1-year reservation</td><td class="n" id="tRiM"></td><td class="n" id="tRiY"></td></tr>
+      <tr class="payg"><td>Reservable machines, pay-as-you-go (5 machines) <span class="tag opt">not in the reserved total</span></td><td class="n" id="tPaygM"></td><td class="n" id="tPaygY"></td></tr>
+      <tr class="ri"><td>Reservable machines, with 1-year reservation <span class="tag">not in the pay-as-you-go total</span></td><td class="n" id="tRiM"></td><td class="n" id="tRiY"></td></tr>
       <tr><td>AKS control plane, Standard tier (not reservable)</td><td class="n">$73</td><td class="n">$876</td></tr>
       <tr><td>Not reservable, mindpath: disks, load balancer, 3 public IPs, snapshot</td><td class="n">$118</td><td class="n">$1,416</td></tr>
       <tr><td>Chatbot machine disk (128 GB Premium)</td><td class="n">$24</td><td class="n">$288</td></tr>
       <tr><td>Odoo disk (32 GB) and static IP, chatbot machine IP</td><td class="n">$10</td><td class="n">$120</td></tr>
       <tr><td>Not reservable, aibotify tenant (section 4)</td><td class="n">$109</td><td class="n">$1,308</td></tr>
-      <tr class="total"><td>Total with reservations</td><td class="n" id="gRiM"></td><td class="n" id="gRiY"></td></tr>
-      <tr class="total"><td>Total without reservations</td><td class="n" id="gPaygM"></td><td class="n" id="gPaygY"></td></tr>
+      <tr class="total ri"><td>Total with reservations</td><td class="n" id="gRiM"></td><td class="n" id="gRiY"></td></tr>
+      <tr class="total payg"><td>Total without reservations</td><td class="n" id="gPaygM"></td><td class="n" id="gPaygY"></td></tr>
     </tbody>
   </table>
   <p class="foot">Outbound bandwidth is not included. Prices are Azure list prices (prices.azure.com), not billed amounts.</p>
