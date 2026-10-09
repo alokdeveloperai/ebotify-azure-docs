@@ -100,8 +100,7 @@
     <tbody>
       <tr class="payg"><td>Reservable machines, pay-as-you-go (5 machines) <span class="tag opt">not in the reserved total</span></td><td class="n" id="tPaygM"></td><td class="n" id="tPaygY"></td></tr>
       <tr class="ri"><td>Reservable machines, with 1-year reservation <span class="tag">not in the pay-as-you-go total</span></td><td class="n" id="tRiM"></td><td class="n" id="tRiY"></td></tr>
-      <tr><td>AKS control plane, Standard tier (not reservable)</td><td class="n">$73</td><td class="n">$876</td></tr>
-      <tr><td>Not reservable services: disks (including the chatbot and Odoo machine disks), load balancer, public IPs, snapshot, container registries, Service Bus, Front Door, storage accounts, Key Vault</td><td class="n">$261</td><td class="n">$3,132</td></tr>
+      <tr><td>Not reservable services: AKS control plane, disks, load balancer, public IPs, snapshot, container registries, Service Bus, Front Door, storage accounts, Key Vault (itemised in section 4)</td><td class="n">$334</td><td class="n">$4,008</td></tr>
       <tr class="total ri"><td>Total with reservations</td><td class="n" id="gRiM"></td><td class="n" id="gRiY"></td></tr>
       <tr class="total payg"><td>Total without reservations</td><td class="n" id="gPaygM"></td><td class="n" id="gPaygY"></td></tr>
     </tbody>
@@ -111,16 +110,26 @@
 
 <section>
   <h2>4. Required Services, No Reservation Available</h2>
-  <p class="sub">We need these and they stay in the aibotify tenant, but Azure offers no reservation for them at our size, so they are billed pay-as-you-go.</p>
+  <p class="sub">Every resource we need that Azure offers no reservation for at our size, billed pay-as-you-go. The subtotal is the &ldquo;Not reservable services&rdquo; line in section 3. <em>After migration</em> items start when the Odoo and chatbot machines move; <em>stays</em> items are not moving to the Mindpath tenant.</p>
   <table>
-    <thead><tr><th>Resource</th><th>Detail</th><th class="n">Per month</th></tr></thead>
+    <thead><tr><th>Resource</th><th>Detail</th><th class="n">Per month</th><th class="n">Per year</th></tr></thead>
     <tbody>
-      <tr><td>2 container registries <span class="tag stay">stays</span></td><td>Basic, $0.1666 a day each, plus storage over the included 10 GB (183 GB and 171 GB stored)</td><td class="n">$44</td></tr>
-      <tr><td>2 Service Bus namespaces <span class="tag stay">stays</span></td><td>Standard, about $10 base once per subscription, the rest is operations</td><td class="n">$20</td></tr>
-      <tr><td>Front Door <span class="tag stay">stays</span></td><td>Standard, about $35 base, plus traffic (no WAF policy)</td><td class="n">~$35</td></tr>
-      <tr><td>11 storage accounts <span class="tag stay">stays</span></td><td>~513 GB total, mostly stgebotifyuksprod (311 GB)</td><td class="n">~$10</td></tr>
-      <tr><td>Key Vault <span class="tag stay">stays</span></td><td>kv-ebotify-prod-westus2</td><td class="n">~$0</td></tr>
-      <tr class="total"><td colspan="2">Subtotal</td><td class="n">~$109</td></tr>
+      <tr><td>AKS control plane</td><td>Standard tier (uptime SLA), $0.10 an hour</td><td class="n">$73</td><td class="n">$876</td></tr>
+      <tr><td>AKS node OS disks</td><td>2 &times; 128 GB Premium, one per node</td><td class="n">$48</td><td class="n">$576</td></tr>
+      <tr><td>Database VM disks</td><td>128 GB Premium data disk + 30 GB Standard SSD OS disk</td><td class="n">$26</td><td class="n">$312</td></tr>
+      <tr><td>Loki and Grafana disks</td><td>50 GB + 20 GB Standard SSD</td><td class="n">$8</td><td class="n">$96</td></tr>
+      <tr><td>Load balancer</td><td>Standard, up to 5 rules, plus data processed</td><td class="n">$18</td><td class="n">$216</td></tr>
+      <tr><td>3 public IPs</td><td>Standard static: cluster outbound, cluster ingress, database VM</td><td class="n">$11</td><td class="n">$132</td></tr>
+      <tr><td>Database disk snapshot</td><td>Incremental, priced at its 128 GB upper bound</td><td class="n">$7</td><td class="n">$84</td></tr>
+      <tr><td>Chatbot machine disk <span class="tag opt">after migration</span></td><td>128 GB Premium</td><td class="n">$24</td><td class="n">$288</td></tr>
+      <tr><td>Odoo VM disk and public IP <span class="tag opt">after migration</span></td><td>32 GB Standard SSD + static IP</td><td class="n">$6</td><td class="n">$72</td></tr>
+      <tr><td>Chatbot machine public IP <span class="tag opt">after migration</span></td><td>Static, only if the machine gets its own IP</td><td class="n">$4</td><td class="n">$48</td></tr>
+      <tr><td>2 container registries <span class="tag stay">stays</span></td><td>Basic, $0.1666 a day each, plus storage over the included 10 GB (183 GB and 171 GB stored)</td><td class="n">$44</td><td class="n">$528</td></tr>
+      <tr><td>2 Service Bus namespaces <span class="tag stay">stays</span></td><td>Standard, about $10 base once per subscription, the rest is operations</td><td class="n">$20</td><td class="n">$240</td></tr>
+      <tr><td>Front Door <span class="tag stay">stays</span></td><td>Standard, $35 base, plus traffic (no WAF policy)</td><td class="n">$35</td><td class="n">$420</td></tr>
+      <tr><td>11 storage accounts <span class="tag stay">stays</span></td><td>~513 GB total, mostly stgebotifyuksprod (311 GB)</td><td class="n">$10</td><td class="n">$120</td></tr>
+      <tr><td>Key Vault <span class="tag stay">stays</span></td><td>kv-ebotify-prod-westus2, no fixed fee</td><td class="n">$0</td><td class="n">$0</td></tr>
+      <tr class="total"><td colspan="2">Subtotal, all non-reservable resources</td><td class="n">$334</td><td class="n">$4,008</td></tr>
     </tbody>
   </table>
 </section>
