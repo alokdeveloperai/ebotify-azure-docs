@@ -1,6 +1,6 @@
 # eBotify Azure Documentation
 
-Cloud infrastructure, reservation planning, and migration resources for eBotify.
+Cloud infrastructure and reservation planning for eBotify.
 
 ## Contents
 

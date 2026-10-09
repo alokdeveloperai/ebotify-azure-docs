@@ -23,7 +23,6 @@
   tr.total td { font-weight:700; background:#f3f8ff; border-top:2px solid var(--accent); }
   .tag { display:inline-block; font-size:12px; padding:2px 8px; border-radius:20px; background:#e6f4ea; color:var(--good); font-weight:600; }
   .tag.opt { background:#fff3dc; color:var(--warn); }
-  .tag.stay { background:#eceff3; color:var(--mute); }
   .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-top:14px; }
   .kpi { border:1px solid var(--line); border-radius:8px; padding:14px 16px; background:#fbfcfe; }
   .kpi .l { color:var(--mute); font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; }
@@ -45,50 +44,77 @@
 <body>
 <header>
   <h1>eBotify Azure &mdash; Reservation Plan</h1>
-  <p>What we reserve now, the two machines still to size, and what stays as-is &middot; UK South &middot; list prices in USD</p>
+  <p>What we reserve now, the two machines to add, and what cannot be reserved &middot; UK South &middot; list prices in USD</p>
 </header>
 
 <main>
 
 <section>
   <h2>1. Reserve now (mindpath tenant, definite)</h2>
-  <p class="sub">These machines are fixed and run 24/7. A 1-year reservation saves about 41% against pay-as-you-go.</p>
+  <p class="sub">These machines are fixed and run 24/7. A 1-year reservation saves about 41% against pay-as-you-go. Measured use is the last 7 days.</p>
   <table>
-    <thead><tr><th>Machine</th><th>Role</th><th>vCPU</th><th>RAM</th><th>Disk</th><th class="n">Pay-as-you-go /yr</th><th class="n">1-yr reserved /yr</th></tr></thead>
+    <thead><tr><th>Machine</th><th>Role</th><th>vCPU</th><th>RAM</th><th>Disk</th><th>Measured use</th><th class="n">Pay-as-you-go /yr</th><th class="n">1-yr reserved /yr</th></tr></thead>
     <tbody>
-      <tr><td>D4as_v7</td><td>AKS user node (apps, Loki, Grafana)</td><td>4</td><td>16 GB</td><td>128 GB Premium</td><td class="n">$1,848</td><td class="n">$1,092</td></tr>
-      <tr><td>D2als_v7</td><td>AKS system node (autoscale fixed at 1)</td><td>2</td><td>4 GB</td><td>128 GB Premium</td><td class="n">$818</td><td class="n">$483</td></tr>
-      <tr><td>E2as_v7</td><td>Database VM</td><td>2</td><td>16 GB</td><td>30 GB OS + 128 GB data</td><td class="n">$1,218</td><td class="n">$716</td></tr>
-      <tr class="total"><td colspan="5">Subtotal, 3 machines</td><td class="n">$3,884</td><td class="n">$2,291</td></tr>
+      <tr><td>D4as_v7</td><td>AKS user node (apps, Loki, Grafana)</td><td>4</td><td>16 GB</td><td>128 GB Premium</td><td>CPU 10% avg, RAM 3.9 GB free at lowest</td><td class="n">$1,848</td><td class="n">$1,092</td></tr>
+      <tr><td>D2als_v7</td><td>AKS system node (autoscale fixed at 1)</td><td>2</td><td>4 GB</td><td>128 GB Premium</td><td>CPU 3% avg, RAM 2.6 GB free at lowest</td><td class="n">$818</td><td class="n">$483</td></tr>
+      <tr><td>E2as_v7</td><td>Database VM</td><td>2</td><td>16 GB</td><td>30 GB OS + 128 GB data</td><td>CPU 10% avg, RAM 10.3 GB free at lowest</td><td class="n">$1,218</td><td class="n">$716</td></tr>
+      <tr class="total"><td colspan="6">Subtotal, 3 machines</td><td class="n">$3,884</td><td class="n">$2,291</td></tr>
     </tbody>
   </table>
 </section>
 
 <section>
-  <h2>2. Two more machines to reserve once migrated to the Mindpath tenant</h2>
-  <p class="sub">One for Odoo (moves from the aibotify tenant) and one for the chatbots, sized anywhere from 4 GB to 16 GB RAM.</p>
+  <h2>2. Two more machines to reserve once they run in the Mindpath tenant</h2>
+  <p class="sub">One for Odoo and one for the chatbots. The 26 chatbots use 23.5 GB of RAM, so the chatbot machine is sized at 32 GB.</p>
 
   <table>
-    <thead><tr><th>Machine</th><th>Role</th><th>vCPU</th><th>RAM</th><th>Disk</th><th class="n">Pay-as-you-go /yr</th><th class="n">1-yr reserved /yr</th></tr></thead>
+    <thead><tr><th>Machine</th><th>Role</th><th>vCPU</th><th>RAM</th><th>Disk</th><th>Measured use</th><th class="n">Pay-as-you-go /yr</th><th class="n">1-yr reserved /yr</th></tr></thead>
     <tbody>
-      <tr><td>B2als_v2 <span class="tag">fixed</span></td><td>Odoo VM (same size as today)</td><td>2</td><td>4 GB</td><td>as today</td><td class="n">$372</td><td class="n">$220</td></tr>
-      <tr><td>Chatbot machine <span class="tag opt">pick a size</span></td><td>Chatbot workloads</td><td>2</td><td id="cbRam">4 GB</td><td>128 GB Premium</td><td class="n" id="cbPayg">$818</td><td class="n" id="cbRi">$483</td></tr>
+      <tr><td>B2als_v2 <span class="tag">fixed</span></td><td>Odoo VM</td><td>2</td><td>4 GB</td><td>32 GB Standard SSD</td><td>CPU 1.5% avg, RAM 1.9 GB free at lowest</td><td class="n">$372</td><td class="n">$220</td></tr>
+      <tr><td>Chatbot machine <span class="tag opt">pick a size</span></td><td>Chatbot workloads</td><td id="cbCpu">4</td><td id="cbRam">32 GB</td><td>128 GB Premium</td><td>26 chatbots use 23.5 GB RAM, 0.2 cores at peak</td><td class="n" id="cbPayg">$2,427</td><td class="n" id="cbRi">$1,433</td></tr>
     </tbody>
   </table>
 
   <p style="margin-top:14px">
     <label for="size">Chatbot machine size:</label>
     <select id="size">
-      <option value="low">4 GB RAM &middot; 2 cores &middot; D2als_v7</option>
-      <option value="mid">8 GB RAM &middot; 2 cores &middot; D2as_v7</option>
-      <option value="high">16 GB RAM &middot; 2 cores &middot; E2as_v7</option>
+      <option value="fit" selected>32 GB RAM &middot; 4 cores &middot; E4as_v7 &middot; fits all 26 chatbots</option>
+      <option value="high">16 GB RAM &middot; 2 cores &middot; E2as_v7 &middot; too small for all 26</option>
+      <option value="mid">8 GB RAM &middot; 2 cores &middot; D2as_v7 &middot; too small for all 26</option>
+      <option value="low">4 GB RAM &middot; 2 cores &middot; D2als_v7 &middot; too small for all 26</option>
     </select>
   </p>
 
 </section>
 
 <section>
-  <h2>3. Yearly and monthly bill</h2>
+  <h2>3. Required Services, No Reservation Available</h2>
+  <p class="sub">Every resource we need that Azure offers no reservation for at our size, billed pay-as-you-go. The subtotal is the &ldquo;Not reservable services&rdquo; line in section 4. <em>Planned</em> items start when the Odoo and chatbot machines are added.</p>
+  <table>
+    <thead><tr><th>Resource</th><th>Detail</th><th class="n">Per month</th><th class="n">Per year</th></tr></thead>
+    <tbody>
+      <tr><td>AKS control plane</td><td>Standard tier (uptime SLA), $0.10 an hour</td><td class="n">$73</td><td class="n">$876</td></tr>
+      <tr><td>AKS node OS disks</td><td>2 &times; 128 GB Premium, one per node</td><td class="n">$48</td><td class="n">$576</td></tr>
+      <tr><td>Database VM disks</td><td>128 GB Premium data disk + 30 GB Standard SSD OS disk</td><td class="n">$26</td><td class="n">$312</td></tr>
+      <tr><td>Loki and Grafana disks</td><td>50 GB + 20 GB Standard SSD</td><td class="n">$8</td><td class="n">$96</td></tr>
+      <tr><td>Load balancer</td><td>Standard, up to 5 rules, plus data processed</td><td class="n">$18</td><td class="n">$216</td></tr>
+      <tr><td>3 public IPs</td><td>Standard static: cluster outbound, cluster ingress, database VM</td><td class="n">$11</td><td class="n">$132</td></tr>
+      <tr><td>Database disk snapshot</td><td>Incremental, priced at its 128 GB upper bound</td><td class="n">$7</td><td class="n">$84</td></tr>
+      <tr><td>Chatbot machine disk <span class="tag opt">planned</span></td><td>128 GB Premium</td><td class="n">$24</td><td class="n">$288</td></tr>
+      <tr><td>Odoo VM disk and public IP <span class="tag opt">planned</span></td><td>32 GB Standard SSD + static IP</td><td class="n">$6</td><td class="n">$72</td></tr>
+      <tr><td>Chatbot machine public IP <span class="tag opt">planned</span></td><td>Static, only if the machine gets its own IP</td><td class="n">$4</td><td class="n">$48</td></tr>
+      <tr><td>2 container registries</td><td>Basic, $0.1666 a day each, plus storage over the included 10 GB (183 GB and 171 GB stored)</td><td class="n">$44</td><td class="n">$528</td></tr>
+      <tr><td>2 Service Bus namespaces</td><td>Standard, about $10 base once per subscription, the rest is operations</td><td class="n">$20</td><td class="n">$240</td></tr>
+      <tr><td>Front Door</td><td>Standard, $35 base, plus traffic (no WAF policy)</td><td class="n">$35</td><td class="n">$420</td></tr>
+      <tr><td>11 storage accounts</td><td>Standard LRS, hot tier, ~513 GB stored, plus transactions</td><td class="n">$10</td><td class="n">$120</td></tr>
+      <tr><td>Key Vault</td><td>No fixed fee, billed per operation</td><td class="n">$0</td><td class="n">$0</td></tr>
+      <tr class="total"><td colspan="2">Subtotal, all non-reservable resources</td><td class="n">$334</td><td class="n">$4,008</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>4. Yearly and monthly bill</h2>
   <p class="sub">Updates when you change the chatbot size above.</p>
   <div class="cards">
     <div class="kpi"><div class="l">Pay-as-you-go</div><div class="v" id="kPaygY">&ndash;</div><small id="kPaygM"></small></div>
@@ -100,38 +126,12 @@
     <tbody>
       <tr class="payg"><td>Reservable machines, pay-as-you-go (5 machines) <span class="tag opt">not in the reserved total</span></td><td class="n" id="tPaygM"></td><td class="n" id="tPaygY"></td></tr>
       <tr class="ri"><td>Reservable machines, with 1-year reservation <span class="tag">not in the pay-as-you-go total</span></td><td class="n" id="tRiM"></td><td class="n" id="tRiY"></td></tr>
-      <tr><td>Not reservable services: AKS control plane, disks, load balancer, public IPs, snapshot, container registries, Service Bus, Front Door, storage accounts, Key Vault (itemised in section 4)</td><td class="n">$334</td><td class="n">$4,008</td></tr>
+      <tr><td>Not reservable services: AKS control plane, disks, load balancer, public IPs, snapshot, container registries, Service Bus, Front Door, storage accounts, Key Vault (itemised in section 3)</td><td class="n">$334</td><td class="n">$4,008</td></tr>
       <tr class="total ri"><td>Total with reservations</td><td class="n" id="gRiM"></td><td class="n" id="gRiY"></td></tr>
       <tr class="total payg"><td>Total without reservations</td><td class="n" id="gPaygM"></td><td class="n" id="gPaygY"></td></tr>
     </tbody>
   </table>
-  <p class="foot">Outbound bandwidth is not included. Prices are Azure list prices (prices.azure.com), not billed amounts.</p>
-</section>
-
-<section>
-  <h2>4. Required Services, No Reservation Available</h2>
-  <p class="sub">Every resource we need that Azure offers no reservation for at our size, billed pay-as-you-go. The subtotal is the &ldquo;Not reservable services&rdquo; line in section 3. <em>After migration</em> items start when the Odoo and chatbot machines move; <em>stays</em> items are not moving to the Mindpath tenant.</p>
-  <table>
-    <thead><tr><th>Resource</th><th>Detail</th><th class="n">Per month</th><th class="n">Per year</th></tr></thead>
-    <tbody>
-      <tr><td>AKS control plane</td><td>Standard tier (uptime SLA), $0.10 an hour</td><td class="n">$73</td><td class="n">$876</td></tr>
-      <tr><td>AKS node OS disks</td><td>2 &times; 128 GB Premium, one per node</td><td class="n">$48</td><td class="n">$576</td></tr>
-      <tr><td>Database VM disks</td><td>128 GB Premium data disk + 30 GB Standard SSD OS disk</td><td class="n">$26</td><td class="n">$312</td></tr>
-      <tr><td>Loki and Grafana disks</td><td>50 GB + 20 GB Standard SSD</td><td class="n">$8</td><td class="n">$96</td></tr>
-      <tr><td>Load balancer</td><td>Standard, up to 5 rules, plus data processed</td><td class="n">$18</td><td class="n">$216</td></tr>
-      <tr><td>3 public IPs</td><td>Standard static: cluster outbound, cluster ingress, database VM</td><td class="n">$11</td><td class="n">$132</td></tr>
-      <tr><td>Database disk snapshot</td><td>Incremental, priced at its 128 GB upper bound</td><td class="n">$7</td><td class="n">$84</td></tr>
-      <tr><td>Chatbot machine disk <span class="tag opt">after migration</span></td><td>128 GB Premium</td><td class="n">$24</td><td class="n">$288</td></tr>
-      <tr><td>Odoo VM disk and public IP <span class="tag opt">after migration</span></td><td>32 GB Standard SSD + static IP</td><td class="n">$6</td><td class="n">$72</td></tr>
-      <tr><td>Chatbot machine public IP <span class="tag opt">after migration</span></td><td>Static, only if the machine gets its own IP</td><td class="n">$4</td><td class="n">$48</td></tr>
-      <tr><td>2 container registries <span class="tag stay">stays</span></td><td>Basic, $0.1666 a day each, plus storage over the included 10 GB (183 GB and 171 GB stored)</td><td class="n">$44</td><td class="n">$528</td></tr>
-      <tr><td>2 Service Bus namespaces <span class="tag stay">stays</span></td><td>Standard, about $10 base once per subscription, the rest is operations</td><td class="n">$20</td><td class="n">$240</td></tr>
-      <tr><td>Front Door <span class="tag stay">stays</span></td><td>Standard, $35 base, plus traffic (no WAF policy)</td><td class="n">$35</td><td class="n">$420</td></tr>
-      <tr><td>11 storage accounts <span class="tag stay">stays</span></td><td>~513 GB total, mostly stgebotifyuksprod (311 GB)</td><td class="n">$10</td><td class="n">$120</td></tr>
-      <tr><td>Key Vault <span class="tag stay">stays</span></td><td>kv-ebotify-prod-westus2, no fixed fee</td><td class="n">$0</td><td class="n">$0</td></tr>
-      <tr class="total"><td colspan="2">Subtotal, all non-reservable resources</td><td class="n">$334</td><td class="n">$4,008</td></tr>
-    </tbody>
-  </table>
+  <p class="foot">Outbound bandwidth is not included. Prices are Azure list prices for UK South (prices.azure.com, checked 9 Oct 2026), not billed amounts. Measured use comes from Azure Monitor and Prometheus over the 7 days to 9 Oct 2026.</p>
 </section>
 
 </main>
@@ -140,9 +140,10 @@
   // Annual list prices (USD), UK South, from prices.azure.com
   var base = { payg: 1848 + 818 + 1218 + 372, ri: 1092 + 483 + 716 + 220 };
   var sizes = {
-    low:  { ram: "4 GB",  payg: 818,  ri: 483 },
-    mid:  { ram: "8 GB",  payg: 929,  ri: 546 },
-    high: { ram: "16 GB", payg: 1218, ri: 716 }
+    fit:  { cpu: 4, ram: "32 GB", payg: 2427, ri: 1433 },
+    high: { cpu: 2, ram: "16 GB", payg: 1218, ri: 716 },
+    mid:  { cpu: 2, ram: "8 GB",  payg: 929,  ri: 546 },
+    low:  { cpu: 2, ram: "4 GB",  payg: 818,  ri: 483 }
   };
   var other = (73 + 118 + 24 + 10 + 109) * 12; // non-reservable, per year
   function usd(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
@@ -150,7 +151,7 @@
   function render() {
     var s = sizes[document.getElementById("size").value];
     var payg = base.payg + s.payg, ri = base.ri + s.ri;
-    set("cbRam", s.ram); set("cbPayg", usd(s.payg)); set("cbRi", usd(s.ri));
+    set("cbCpu", s.cpu); set("cbRam", s.ram); set("cbPayg", usd(s.payg)); set("cbRi", usd(s.ri));
     set("tPaygY", usd(payg)); set("tPaygM", usd(payg / 12));
     set("tRiY", usd(ri));     set("tRiM", usd(ri / 12));
     set("gPaygY", usd(payg + other)); set("gPaygM", usd((payg + other) / 12));
