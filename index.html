@@ -55,7 +55,7 @@
   <table>
     <thead><tr><th>Machine</th><th>Role</th><th>vCPU</th><th>RAM</th><th>Disk</th><th>Measured use</th><th class="n">Pay-as-you-go /yr</th><th class="n">1-yr reserved /yr</th></tr></thead>
     <tbody>
-      <tr><td>D4as_v7</td><td>AKS user node (apps, Loki, Grafana)</td><td>4</td><td>16 GB</td><td>128 GB Premium</td><td>CPU 10% avg, RAM 3.9 GB free at lowest</td><td class="n">$1,848</td><td class="n">$1,092</td></tr>
+      <tr><td>D4as_v7</td><td>AKS user node (backend and frontend apps)</td><td>4</td><td>16 GB</td><td>128 GB Premium</td><td>CPU 10% avg, RAM 3.9 GB free at lowest</td><td class="n">$1,848</td><td class="n">$1,092</td></tr>
       <tr><td>D2als_v7</td><td>AKS system node (autoscale fixed at 1)</td><td>2</td><td>4 GB</td><td>128 GB Premium</td><td>CPU 3% avg, RAM 2.6 GB free at lowest</td><td class="n">$818</td><td class="n">$483</td></tr>
       <tr><td>E2as_v7</td><td>Database VM</td><td>2</td><td>16 GB</td><td>30 GB OS + 128 GB data</td><td>CPU 10% avg, RAM 10.3 GB free at lowest</td><td class="n">$1,218</td><td class="n">$716</td></tr>
       <tr class="total"><td colspan="6">Subtotal, 3 machines</td><td class="n">$3,884</td><td class="n">$2,291</td></tr>
@@ -65,22 +65,22 @@
 
 <section>
   <h2>2. Two more machines to reserve once they run in the Mindpath tenant</h2>
-  <p class="sub">One for Odoo and one for the chatbots. The 26 chatbots use 23.5 GB of RAM, so the chatbot machine is sized at 32 GB.</p>
+  <p class="sub">One for Odoo and one for the chatbots. The chatbot machine size is chosen below.</p>
 
   <table>
     <thead><tr><th>Machine</th><th>Role</th><th>vCPU</th><th>RAM</th><th>Disk</th><th>Measured use</th><th class="n">Pay-as-you-go /yr</th><th class="n">1-yr reserved /yr</th></tr></thead>
     <tbody>
       <tr><td>B2als_v2 <span class="tag">fixed</span></td><td>Odoo VM</td><td>2</td><td>4 GB</td><td>32 GB Standard SSD</td><td>CPU 1.5% avg, RAM 1.9 GB free at lowest</td><td class="n">$372</td><td class="n">$220</td></tr>
-      <tr><td>Chatbot machine <span class="tag opt">pick a size</span></td><td>Chatbot workloads</td><td id="cbCpu">4</td><td id="cbRam">32 GB</td><td>128 GB Premium</td><td>26 chatbots use 23.5 GB RAM, 0.2 cores at peak</td><td class="n" id="cbPayg">$2,427</td><td class="n" id="cbRi">$1,433</td></tr>
+      <tr><td>Chatbot machine <span class="tag opt">pick a size</span></td><td>Chatbot workloads</td><td id="cbCpu">2</td><td id="cbRam">8 GB</td><td>128 GB Premium</td><td>26 chatbots use 23.5 GB RAM, 0.2 cores at peak</td><td class="n" id="cbPayg">$929</td><td class="n" id="cbRi">$546</td></tr>
     </tbody>
   </table>
 
   <p style="margin-top:14px">
     <label for="size">Chatbot machine size:</label>
     <select id="size">
-      <option value="fit" selected>32 GB RAM &middot; 4 cores &middot; E4as_v7 &middot; fits all 26 chatbots</option>
+      <option value="fit">32 GB RAM &middot; 4 cores &middot; E4as_v7 &middot; fits all 26 chatbots</option>
       <option value="high">16 GB RAM &middot; 2 cores &middot; E2as_v7 &middot; too small for all 26</option>
-      <option value="mid">8 GB RAM &middot; 2 cores &middot; D2as_v7 &middot; too small for all 26</option>
+      <option value="mid" selected>8 GB RAM &middot; 2 cores &middot; D2as_v7 &middot; too small for all 26</option>
       <option value="low">4 GB RAM &middot; 2 cores &middot; D2als_v7 &middot; too small for all 26</option>
     </select>
   </p>
@@ -96,7 +96,6 @@
       <tr><td>AKS control plane</td><td>Standard tier (uptime SLA), $0.10 an hour</td><td class="n">$73</td><td class="n">$876</td></tr>
       <tr><td>AKS node OS disks</td><td>2 &times; 128 GB Premium, one per node</td><td class="n">$48</td><td class="n">$576</td></tr>
       <tr><td>Database VM disks</td><td>128 GB Premium data disk + 30 GB Standard SSD OS disk</td><td class="n">$26</td><td class="n">$312</td></tr>
-      <tr><td>Loki and Grafana disks</td><td>50 GB + 20 GB Standard SSD</td><td class="n">$8</td><td class="n">$96</td></tr>
       <tr><td>Load balancer</td><td>Standard, up to 5 rules, plus data processed</td><td class="n">$18</td><td class="n">$216</td></tr>
       <tr><td>3 public IPs</td><td>Standard static: cluster outbound, cluster ingress, database VM</td><td class="n">$11</td><td class="n">$132</td></tr>
       <tr><td>Database disk snapshot</td><td>Incremental, priced at its 128 GB upper bound</td><td class="n">$7</td><td class="n">$84</td></tr>
@@ -108,7 +107,7 @@
       <tr><td>Front Door</td><td>Standard, $35 base, plus traffic (no WAF policy)</td><td class="n">$35</td><td class="n">$420</td></tr>
       <tr><td>11 storage accounts</td><td>Standard LRS, hot tier, ~513 GB stored, plus transactions</td><td class="n">$10</td><td class="n">$120</td></tr>
       <tr><td>Key Vault</td><td>No fixed fee, billed per operation</td><td class="n">$0</td><td class="n">$0</td></tr>
-      <tr class="total"><td colspan="2">Subtotal, all non-reservable resources</td><td class="n">$334</td><td class="n">$4,008</td></tr>
+      <tr class="total"><td colspan="2">Subtotal, all non-reservable resources</td><td class="n">$326</td><td class="n">$3,912</td></tr>
     </tbody>
   </table>
 </section>
@@ -126,7 +125,7 @@
     <tbody>
       <tr class="payg"><td>Reservable machines, pay-as-you-go (5 machines) <span class="tag opt">not in the reserved total</span></td><td class="n" id="tPaygM"></td><td class="n" id="tPaygY"></td></tr>
       <tr class="ri"><td>Reservable machines, with 1-year reservation <span class="tag">not in the pay-as-you-go total</span></td><td class="n" id="tRiM"></td><td class="n" id="tRiY"></td></tr>
-      <tr><td>Not reservable services: AKS control plane, disks, load balancer, public IPs, snapshot, container registries, Service Bus, Front Door, storage accounts, Key Vault (itemised in section 3)</td><td class="n">$334</td><td class="n">$4,008</td></tr>
+      <tr><td>Not reservable services: AKS control plane, disks, load balancer, public IPs, snapshot, container registries, Service Bus, Front Door, storage accounts, Key Vault (itemised in section 3)</td><td class="n">$326</td><td class="n">$3,912</td></tr>
       <tr class="total ri"><td>Total with reservations</td><td class="n" id="gRiM"></td><td class="n" id="gRiY"></td></tr>
       <tr class="total payg"><td>Total without reservations</td><td class="n" id="gPaygM"></td><td class="n" id="gPaygY"></td></tr>
     </tbody>
@@ -145,7 +144,7 @@
     mid:  { cpu: 2, ram: "8 GB",  payg: 929,  ri: 546 },
     low:  { cpu: 2, ram: "4 GB",  payg: 818,  ri: 483 }
   };
-  var other = (73 + 118 + 24 + 10 + 109) * 12; // non-reservable, per year
+  var other = (73 + 110 + 24 + 10 + 109) * 12; // non-reservable, per year
   function usd(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
   function set(id, v) { document.getElementById(id).textContent = v; }
   function render() {
