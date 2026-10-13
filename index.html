@@ -39,12 +39,25 @@
   tr.payg td:first-child { border-left:4px solid var(--warn); }
   tr.total.ri td { background:#d3ecdb; border-top:2px solid var(--good); }
   tr.total.payg td { background:#ffe7b8; border-top:2px solid var(--warn); }
+  section.assume { background:#fff8ed; border:2px solid #ff9933; }
+  section.assume h2 { color:#b45f06; }
+  section.assume .badge { display:inline-block; margin-left:10px; padding:2px 10px; border-radius:20px; background:#ff9933; color:#fff; font-size:12px; font-weight:700; letter-spacing:.04em; vertical-align:middle; }
+  section.assume .sub, section.assume .foot { color:#7a4a12; }
+  section.assume th { background:#ffe2bd; }
+  section.assume td, section.assume th { border-bottom-color:#f3d3a6; }
+  section.assume tr.ri td, section.assume tr.payg td { background:#ffeccc; }
+  section.assume tr.ri td:first-child, section.assume tr.payg td:first-child { border-left:4px solid #ff9933; }
+  section.assume tr.total td { background:#ffd9a0; border-top:2px solid #ff9933; }
+  section.assume tr.total.ri td, section.assume tr.total.payg td { background:#ffd9a0; border-top:2px solid #ff9933; }
+  section.assume .tag, section.assume .tag.opt { background:#ffe2bd; color:#8a4b00; }
+  section.assume .kpi { background:#fffdf8; border-color:#f3c98b; }
+  section.assume .kpi .v.g { color:#b45f06; }
 </style>
 </head>
 <body>
 <header>
   <h1>eBotify Azure &mdash; Reservation Plan</h1>
-  <p>What we reserve now, the two machines to add, and what cannot be reserved &middot; UK South &middot; list prices in USD</p>
+  <p>What we reserve now, the Odoo machine to add, what cannot be reserved, and the chatbot machine on its own &middot; UK South &middot; list prices in USD</p>
 </header>
 
 <main>
@@ -64,32 +77,20 @@
 </section>
 
 <section>
-  <h2>2. Two more machines to reserve once they run in the Mindpath tenant</h2>
-  <p class="sub">One for Odoo and one for the chatbots. The chatbot machine size is chosen below.</p>
+  <h2>2. One more machine to reserve once it runs in the Mindpath tenant</h2>
+  <p class="sub">The Odoo VM, same size as today. The chatbot machine is shown on its own in section 5.</p>
 
   <table>
     <thead><tr><th>Machine</th><th>Role</th><th>vCPU</th><th>RAM</th><th>Disk</th><th>Measured use</th><th class="n">Pay-as-you-go /yr</th><th class="n">1-yr reserved /yr</th></tr></thead>
     <tbody>
       <tr><td>B2als_v2 <span class="tag">fixed</span></td><td>Odoo VM</td><td>2</td><td>4 GB</td><td>32 GB Standard SSD</td><td>CPU 1.5% avg, RAM 1.9 GB free at lowest</td><td class="n">$372</td><td class="n">$220</td></tr>
-      <tr><td>Chatbot machine <span class="tag opt">pick a size</span></td><td>Chatbot workloads</td><td id="cbCpu">2</td><td id="cbRam">8 GB</td><td>128 GB Premium</td><td>26 chatbots use 23.5 GB RAM, 0.2 cores at peak</td><td class="n" id="cbPayg">$929</td><td class="n" id="cbRi">$546</td></tr>
     </tbody>
   </table>
-
-  <p style="margin-top:14px">
-    <label for="size">Chatbot machine size:</label>
-    <select id="size">
-      <option value="fit">32 GB RAM &middot; 4 cores &middot; E4as_v7 &middot; fits all 26 chatbots</option>
-      <option value="high">16 GB RAM &middot; 2 cores &middot; E2as_v7 &middot; too small for all 26</option>
-      <option value="mid" selected>8 GB RAM &middot; 2 cores &middot; D2as_v7 &middot; too small for all 26</option>
-      <option value="low">4 GB RAM &middot; 2 cores &middot; D2als_v7 &middot; too small for all 26</option>
-    </select>
-  </p>
-
 </section>
 
 <section>
   <h2>3. Required Services, No Reservation Available</h2>
-  <p class="sub">Every resource we need that Azure offers no reservation for at our size, billed pay-as-you-go. The subtotal is the &ldquo;Not reservable services&rdquo; line in section 4. <em>Planned</em> items start when the Odoo and chatbot machines are added.</p>
+  <p class="sub">Every resource we need that Azure offers no reservation for at our size, billed pay-as-you-go. The subtotal is the &ldquo;Not reservable services&rdquo; line in section 4. <em>Planned</em> items start when the Odoo machine is added.</p>
   <table>
     <thead><tr><th>Resource</th><th>Detail</th><th class="n">Per month</th><th class="n">Per year</th></tr></thead>
     <tbody>
@@ -99,22 +100,20 @@
       <tr><td>Load balancer</td><td>Standard, up to 5 rules, plus data processed</td><td class="n">$18</td><td class="n">$216</td></tr>
       <tr><td>3 public IPs</td><td>Standard static: cluster outbound, cluster ingress, database VM</td><td class="n">$11</td><td class="n">$132</td></tr>
       <tr><td>Database disk snapshot</td><td>Incremental, priced at its 128 GB upper bound</td><td class="n">$7</td><td class="n">$84</td></tr>
-      <tr><td>Chatbot machine disk <span class="tag opt">planned</span></td><td>128 GB Premium</td><td class="n">$24</td><td class="n">$288</td></tr>
       <tr><td>Odoo VM disk and public IP <span class="tag opt">planned</span></td><td>32 GB Standard SSD + static IP</td><td class="n">$6</td><td class="n">$72</td></tr>
-      <tr><td>Chatbot machine public IP <span class="tag opt">planned</span></td><td>Static, only if the machine gets its own IP</td><td class="n">$4</td><td class="n">$48</td></tr>
       <tr><td>2 container registries</td><td>Basic, $0.1666 a day each, plus storage over the included 10 GB (183 GB and 171 GB stored)</td><td class="n">$44</td><td class="n">$528</td></tr>
       <tr><td>2 Service Bus namespaces</td><td>Standard, about $10 base once per subscription, the rest is operations</td><td class="n">$20</td><td class="n">$240</td></tr>
       <tr><td>Front Door</td><td>Standard, $35 base, plus traffic (no WAF policy)</td><td class="n">$35</td><td class="n">$420</td></tr>
       <tr><td>11 storage accounts</td><td>Standard LRS, hot tier, ~513 GB stored, plus transactions</td><td class="n">$10</td><td class="n">$120</td></tr>
       <tr><td>Key Vault</td><td>No fixed fee, billed per operation</td><td class="n">$0</td><td class="n">$0</td></tr>
-      <tr class="total"><td colspan="2">Subtotal, all non-reservable resources</td><td class="n">$326</td><td class="n">$3,912</td></tr>
+      <tr class="total"><td colspan="2">Subtotal, all non-reservable resources</td><td class="n">$298</td><td class="n">$3,576</td></tr>
     </tbody>
   </table>
 </section>
 
 <section>
   <h2>4. Yearly and monthly bill</h2>
-  <p class="sub">Updates when you change the chatbot size above.</p>
+  <p class="sub">Covers sections 1 to 3. The chatbot machine is not included; it is in section 5.</p>
   <div class="cards">
     <div class="kpi"><div class="l">Pay-as-you-go</div><div class="v" id="kPaygY">&ndash;</div><small id="kPaygM"></small></div>
     <div class="kpi"><div class="l">With 1-year reservations</div><div class="v g" id="kRiY">&ndash;</div><small id="kRiM"></small></div>
@@ -123,9 +122,9 @@
   <table style="margin-top:16px">
     <thead><tr><th>Line</th><th class="n">Per month</th><th class="n">Per year</th></tr></thead>
     <tbody>
-      <tr class="payg"><td>Reservable machines, pay-as-you-go (5 machines) <span class="tag opt">not in the reserved total</span></td><td class="n" id="tPaygM"></td><td class="n" id="tPaygY"></td></tr>
+      <tr class="payg"><td>Reservable machines, pay-as-you-go (4 machines) <span class="tag opt">not in the reserved total</span></td><td class="n" id="tPaygM"></td><td class="n" id="tPaygY"></td></tr>
       <tr class="ri"><td>Reservable machines, with 1-year reservation <span class="tag">not in the pay-as-you-go total</span></td><td class="n" id="tRiM"></td><td class="n" id="tRiY"></td></tr>
-      <tr><td>Not reservable services: AKS control plane, disks, load balancer, public IPs, snapshot, container registries, Service Bus, Front Door, storage accounts, Key Vault (itemised in section 3)</td><td class="n">$326</td><td class="n">$3,912</td></tr>
+      <tr><td>Not reservable services: AKS control plane, disks, load balancer, public IPs, snapshot, container registries, Service Bus, Front Door, storage accounts, Key Vault (itemised in section 3)</td><td class="n">$298</td><td class="n">$3,576</td></tr>
       <tr class="total ri"><td>Total with reservations</td><td class="n" id="gRiM"></td><td class="n" id="gRiY"></td></tr>
       <tr class="total payg"><td>Total without reservations</td><td class="n" id="gPaygM"></td><td class="n" id="gPaygY"></td></tr>
     </tbody>
@@ -133,34 +132,86 @@
   <p class="foot">Outbound bandwidth is not included. Prices are Azure list prices for UK South (prices.azure.com, checked 9 Oct 2026), not billed amounts. Measured use comes from Azure Monitor and Prometheus over the 7 days to 9 Oct 2026.</p>
 </section>
 
+<section class="assume">
+  <h2>5. Chatbot Cost <span class="badge">ASSUMPTION</span></h2>
+  <p class="sub"><strong>Assumption, not a confirmed plan.</strong> Shown on its own and not included in any total above. Measured use and the reservation needed, based on the 26 running chatbots over the 7 days to 13 Oct 2026 (Prometheus, working-set memory and CPU).</p>
+  <table>
+    <thead><tr><th>Measure</th><th class="n">Value</th></tr></thead>
+    <tbody>
+      <tr><td>Chatbot pods running</td><td class="n">26</td></tr>
+      <tr><td>Memory in use, average</td><td class="n">23.4 GB</td></tr>
+      <tr><td>Memory in use, 95th percentile</td><td class="n">23.5 GB</td></tr>
+      <tr><td>Memory in use, peak</td><td class="n">23.6 GB</td></tr>
+      <tr><td>Largest single pod</td><td class="n">2.3 GB</td></tr>
+      <tr><td>CPU, average</td><td class="n">0.01 cores</td></tr>
+      <tr><td>CPU, 95th percentile</td><td class="n">0.03 cores</td></tr>
+      <tr><td>CPU, peak</td><td class="n">0.18 cores</td></tr>
+    </tbody>
+  </table>
+
+  <table style="margin-top:16px">
+    <thead><tr><th>Machine</th><th>vCPU</th><th>RAM</th><th>Holds the 23.6 GB peak?</th><th class="n">Pay-as-you-go /yr</th><th class="n">1-yr reserved /yr</th></tr></thead>
+    <tbody>
+      <tr><td>D2als_v7</td><td>2</td><td>4 GB</td><td>No</td><td class="n">$818</td><td class="n">$483</td></tr>
+      <tr><td>D2as_v7</td><td>2</td><td>8 GB</td><td>No</td><td class="n">$929</td><td class="n">$546</td></tr>
+      <tr><td>E2as_v7</td><td>2</td><td>16 GB</td><td>No</td><td class="n">$1,218</td><td class="n">$716</td></tr>
+      <tr class="ri"><td>E4as_v7 <span class="tag">needed</span></td><td>4</td><td>32 GB</td><td>Yes</td><td class="n">$2,427</td><td class="n">$1,433</td></tr>
+    </tbody>
+  </table>
+  <p class="foot">Memory sets the size, not CPU: the chatbots peak at 0.18 of 4 cores. A 32 GB node has about 28 GB usable after AKS takes its share (estimate), so peak use is about 83% of it. E4as_v7 is the smallest 32 GB machine in the E series.</p>
+
+  <div class="cards">
+    <div class="kpi"><div class="l">Machine to reserve</div><div class="v">1 &times; E4as_v7</div><small>4 vCPU &middot; 32 GB &middot; 1-year term</small></div>
+    <div class="kpi"><div class="l">Reservation cost</div><div class="v g">$1,433 / yr</div><small>$119 / month</small></div>
+    <div class="kpi"><div class="l">You save</div><div class="v g">$994 / yr</div><small>$83 / month against $2,427 pay-as-you-go</small></div>
+  </div>
+
+  <table style="margin-top:16px">
+    <thead><tr><th>Line</th><th class="n">Per month</th><th class="n">Per year</th></tr></thead>
+    <tbody>
+      <tr class="payg"><td>Machine, pay-as-you-go <span class="tag opt">not in the reserved total</span></td><td class="n">$202</td><td class="n">$2,427</td></tr>
+      <tr class="ri"><td>Machine, with 1-year reservation <span class="tag">not in the pay-as-you-go total</span></td><td class="n">$119</td><td class="n">$1,433</td></tr>
+      <tr><td>Disk, 128 GB Premium (not reservable)</td><td class="n">$24</td><td class="n">$288</td></tr>
+      <tr><td>Public IP (not reservable, only if the machine gets its own)</td><td class="n">$4</td><td class="n">$48</td></tr>
+      <tr class="total ri"><td>Chatbot machine, with reservation</td><td class="n">$147</td><td class="n">$1,769</td></tr>
+      <tr class="total payg"><td>Chatbot machine, without reservation</td><td class="n">$230</td><td class="n">$2,763</td></tr>
+    </tbody>
+  </table>
+  <h3 style="margin:22px 0 4px;font-size:15px">Other services the chatbots use besides the machine</h3>
+  <p class="sub">Read from the 26 running chatbots: their configuration, their traffic over 7 days (Prometheus) and Azure list prices.</p>
+  <table>
+    <thead><tr><th>Service</th><th>What the chatbots use it for</th><th>Measured</th><th class="n">Per month</th></tr></thead>
+    <tbody>
+      <tr><td>Container registry</td><td>All 27 chatbot images are pulled from the prod registry</td><td>171 GB stored, shared with backend and frontend</td><td class="n">$21, in section 3</td></tr>
+      <tr><td>AKS control plane, load balancer, outbound IP</td><td>Shared ingress and outbound traffic; every chatbot ingress reuses the same load balancer rules</td><td>No extra rule or IP needed</td><td class="n">in section 3</td></tr>
+      <tr><td>Load balancer data processed</td><td>Traffic in and out of the chatbots</td><td>19.6 GB in + 8.7 GB out a month</td><td class="n">under $1 ($0.14)</td></tr>
+      <tr><td>Outbound internet traffic</td><td>Calls to third-party and platform APIs</td><td>8.7 GB a month, inside the 100 GB free each month</td><td class="n">$0 (worst case $0.70)</td></tr>
+      <tr><td>Disks and volumes</td><td>None: no chatbot pod mounts a volume</td><td>0</td><td class="n">$0</td></tr>
+      <tr><td>Service Bus, storage, Key Vault</td><td>No Azure data service address in any chatbot configuration; they reach these through the platform APIs, whose cost is in section 3</td><td>n/a</td><td class="n">in section 3</td></tr>
+      <tr><td>Chatbot log storage</td><td>Only if the chatbot logs are kept on Azure disks: 100 GB + 20 GB Standard SSD</td><td>Chatbots log about 10 MB a day</td><td class="n">$13 if on Azure, $0 if on the dev master</td></tr>
+    </tbody>
+  </table>
+  <p class="foot">The usage-based lines are under $1 a month together, so they are not added to the totals. The log storage line is the one open choice and is not added either: it is $0 if the logs go to the dev master like the backend and frontend logs, and about $13 a month if the chatbots get their own log and dashboard disks in this tenant. Paid outside Azure and not in this document: MongoDB Atlas (2 clusters), Pinecone, Google Maps and other third-party APIs.</p>
+  <p class="foot">Adding the chatbot machine to the totals in section 4 gives $7,856 a year with reservations and $10,595 a year without.</p>
+</section>
+
 </main>
 
 <script>
-  // Annual list prices (USD), UK South, from prices.azure.com
-  var base = { payg: 1848 + 818 + 1218 + 372, ri: 1092 + 483 + 716 + 220 };
-  var sizes = {
-    fit:  { cpu: 4, ram: "32 GB", payg: 2427, ri: 1433 },
-    high: { cpu: 2, ram: "16 GB", payg: 1218, ri: 716 },
-    mid:  { cpu: 2, ram: "8 GB",  payg: 929,  ri: 546 },
-    low:  { cpu: 2, ram: "4 GB",  payg: 818,  ri: 483 }
-  };
-  var other = (73 + 110 + 24 + 10 + 109) * 12; // non-reservable, per year
+  // Annual list prices (USD), UK South, from prices.azure.com. Sections 1 and 2 machines, chatbot excluded.
+  var payg = 1848 + 818 + 1218 + 372, ri = 1092 + 483 + 716 + 220;
+  var other = (73 + 110 + 24 + 10 + 109 - 28) * 12; // non-reservable, per year (section 3)
   function usd(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
   function set(id, v) { document.getElementById(id).textContent = v; }
-  function render() {
-    var s = sizes[document.getElementById("size").value];
-    var payg = base.payg + s.payg, ri = base.ri + s.ri;
-    set("cbCpu", s.cpu); set("cbRam", s.ram); set("cbPayg", usd(s.payg)); set("cbRi", usd(s.ri));
-    set("tPaygY", usd(payg)); set("tPaygM", usd(payg / 12));
-    set("tRiY", usd(ri));     set("tRiM", usd(ri / 12));
-    set("gPaygY", usd(payg + other)); set("gPaygM", usd((payg + other) / 12));
-    set("gRiY", usd(ri + other));     set("gRiM", usd((ri + other) / 12));
-    set("kPaygY", usd(payg + other) + " / yr"); set("kPaygM", usd((payg + other) / 12) + " / month");
-    set("kRiY", usd(ri + other) + " / yr");     set("kRiM", usd((ri + other) / 12) + " / month");
-    set("kSaveY", usd(payg - ri) + " / yr");    set("kSaveM", usd((payg - ri) / 12) + " / month");
-  }
-  document.getElementById("size").addEventListener("change", render);
-  render();
+  function mo(y) { return Math.round(y / 12); }
+  var gPaygM = mo(payg) + other / 12, gRiM = mo(ri) + other / 12; // monthly totals add the visible monthly lines
+  set("tPaygY", usd(payg)); set("tPaygM", usd(mo(payg)));
+  set("tRiY", usd(ri));     set("tRiM", usd(mo(ri)));
+  set("gPaygY", usd(payg + other)); set("gPaygM", usd(gPaygM));
+  set("gRiY", usd(ri + other));     set("gRiM", usd(gRiM));
+  set("kPaygY", usd(payg + other) + " / yr"); set("kPaygM", usd(gPaygM) + " / month");
+  set("kRiY", usd(ri + other) + " / yr");     set("kRiM", usd(gRiM) + " / month");
+  set("kSaveY", usd(payg - ri) + " / yr");    set("kSaveM", usd(gPaygM - gRiM) + " / month");
 </script>
 </body>
 </html>
